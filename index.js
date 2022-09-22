@@ -58,8 +58,16 @@ app.get('/api/users', function(req, res){
   )
 })
 
-app.get('/api/:_id/logs', function(req, res){
+app.get('/api/users/:_id/logs', function(req, res){
   let userID = req.params._id;
+
+  let fromParam = req.query.from;
+  let toParam = req.query.to;
+  let limitParam = req.query.limit;
+
+  console.log(req.query);
+  // If limit param exists set it to an integer
+  limitParam = limitParam ? parseInt(limitParam): limitParam
 
   let resObj = {}
 
@@ -69,8 +77,34 @@ app.get('/api/:_id/logs', function(req, res){
     resObj._id = userFound._id;
     resObj.username = userFound.username;
 
-    exerciseModel.find({user_id: userID}).then(
-      function(data){
+    let queryObj = {user_id: userID}
+
+    // If we have a date
+    if (fromParam || toParam){
+
+      console.log("we have a date");
+
+      queryObj.date = {}
+      if (fromParam){
+        queryObj.date['$gte'] = fromParam;
+      }
+      if (toParam){
+        queryObj.date['$lte'] = toParam;
+      }
+    }
+
+    if(limitParam){
+      limitParam = parseInt(limitParam)
+    }
+
+    console.log(queryObj);
+
+    exerciseModel.find(queryObj)
+    .limit(limitParam)
+    .exec(
+      function(err, data){
+
+        if (err) return console.log(err);
 
         resObj.count = data.length;
 
@@ -81,6 +115,7 @@ app.get('/api/:_id/logs', function(req, res){
         })
 
         resObj.log = data;
+
 
         res.json(resObj);
       }
