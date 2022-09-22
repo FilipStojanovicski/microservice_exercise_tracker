@@ -67,11 +67,11 @@ app.get('/api/:_id/logs', function(req, res){
     if (err) return console.log(err);
 
     resObj._id = userFound._id;
-    resObj._id = userFound.username;
+    resObj.username = userFound.username;
 
     exerciseModel.find({user_id: userID}).then(
       function(data){
-        
+
         resObj.count = data.length;
 
         // Format the exercises data
