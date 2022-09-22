@@ -61,12 +61,32 @@ app.get('/api/users', function(req, res){
 app.get('/api/:_id/logs', function(req, res){
   let userID = req.params._id;
 
-  exerciseModel.find({user_id: userID}).then(
-    function(data){
-      res.json(data);
-    }
-  )
-})
+  let resObj = {}
+
+  userModel.findById(userID, function (err, userFound){
+    if (err) return console.log(err);
+
+    resObj._id = userFound._id;
+    resObj._id = userFound.username;
+
+    exerciseModel.find({user_id: userID}).then(
+      function(data){
+        
+        resObj.count = data.length;
+
+        // Format the exercises data
+        data = data.map(function(x){
+          return {description: x.description, duration: x.duration, 
+            date: new Date(x.date).toDateString()}
+        })
+
+        resObj.log = data;
+
+        res.json(resObj);
+      }
+    )
+  })
+  });
 
 app.post('/api/users/:_id/exercises', function(req, res){
   let userID = req.params._id;
