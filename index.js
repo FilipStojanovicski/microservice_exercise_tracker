@@ -65,7 +65,6 @@ app.get('/api/users/:_id/logs', function(req, res){
   let toParam = req.query.to;
   let limitParam = req.query.limit;
 
-  console.log(req.query);
   // If limit param exists set it to an integer
   limitParam = limitParam ? parseInt(limitParam): limitParam
 
@@ -79,10 +78,8 @@ app.get('/api/users/:_id/logs', function(req, res){
 
     let queryObj = {user_id: userID}
 
-    // If we have a date
+    // If we have a date add date params to the query
     if (fromParam || toParam){
-
-      console.log("we have a date");
 
       queryObj.date = {}
       if (fromParam){
@@ -96,8 +93,6 @@ app.get('/api/users/:_id/logs', function(req, res){
     if(limitParam){
       limitParam = parseInt(limitParam)
     }
-
-    console.log(queryObj);
 
     exerciseModel.find(queryObj)
     .limit(limitParam)
